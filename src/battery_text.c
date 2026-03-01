@@ -32,7 +32,4 @@ static int behavior_battery_released(struct zmk_behavior_binding *binding,
     return ZMK_BEHAVIOR_OPAQUE;
 }
 
-ZMK_BEHAVIOR_DEFINE(battery,\
-    NULL,\
-    behavior_battery_pressed,\
-    behavior_battery_released);
+ZMK_BEHAVIOR_DEFINE(behavior_battery,NULL,behavior_battery_pressed,behavior_battery_released);

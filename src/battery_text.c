@@ -3,6 +3,7 @@
 #include <zmk/behavior_queue.h>
 #include <zmk/keymap.h>
 #include <zmk/hid.h>
+#include <drivers/behavior.h>
 
 static int behavior_battery_pressed(struct zmk_behavior_binding *binding,
                                     struct zmk_behavior_binding_event event) {
@@ -32,4 +33,13 @@ static int behavior_battery_released(struct zmk_behavior_binding *binding,
     return ZMK_BEHAVIOR_OPAQUE;
 }
 
-ZMK_BEHAVIOR_DEFINE(behavior_battery,NULL,behavior_battery_pressed,behavior_battery_released);
+static const struct behavior_driver_api behavior_battery_driver_api = {
+    .binding_pressed = behavior_battery_pressed,
+    .binding_released = behavior_battery_released,
+};
+
+#define BATTERY_INST(n) \
+    BEHAVIOR_DT_INST_DEFINE(n, NULL, NULL, NULL, NULL, POST_KERNEL, \
+                            CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, &behavior_battery_driver_api);
+
+DT_INST_FOREACH_STATUS_OKAY(BATTERY_INST)

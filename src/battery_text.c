@@ -5,6 +5,7 @@
 #include <zmk/behavior_queue.h>
 #include <zmk/keymap.h>
 #include <zmk/events/keycode_state_changed.h>
+#include <zmk/event_manager.h>
 #include <drivers/behavior.h>
 
 static int behavior_battery_pressed(struct zmk_behavior_binding *binding,
@@ -21,9 +22,24 @@ static int behavior_battery_pressed(struct zmk_behavior_binding *binding,
     };
 
     for (int i = 0; i < sizeof(battery_codes) / sizeof(battery_codes[0]); i++) {
-        raise_zmk_keycode_state_changed_from_encoded(battery_codes[i], true, k_uptime_get());
+        // Create and post keycode press event
+        struct zmk_keycode_state_changed *press_event = new_zmk_keycode_state_changed();
+        press_event->keycode = battery_codes[i];
+        press_event->state = true;
+        press_event->implicit = false;
+        press_event->timestamp = k_uptime_get();
+        zmk_event_raise(press_event);
+
         k_msleep(10);
-        raise_zmk_keycode_state_changed_from_encoded(battery_codes[i], false, k_uptime_get());
+
+        // Create and post keycode release event
+        struct zmk_keycode_state_changed *release_event = new_zmk_keycode_state_changed();
+        release_event->keycode = battery_codes[i];
+        release_event->state = false;
+        release_event->implicit = false;
+        release_event->timestamp = k_uptime_get();
+        zmk_event_raise(release_event);
+
         k_msleep(10);
     }
 

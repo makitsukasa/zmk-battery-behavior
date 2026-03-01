@@ -1,3 +1,5 @@
+#define DT_DRV_COMPAT zmk_behavior_battery
+
 #include <zephyr/kernel.h>
 #include <zmk/behavior.h>
 #include <zmk/behavior_queue.h>

@@ -4,7 +4,7 @@
 #include <zmk/behavior.h>
 #include <zmk/behavior_queue.h>
 #include <zmk/keymap.h>
-#include <zmk/hid.h>
+#include <zmk/events/keycode_state_changed.h>
 #include <drivers/behavior.h>
 
 static int behavior_battery_pressed(struct zmk_behavior_binding *binding,
@@ -21,9 +21,9 @@ static int behavior_battery_pressed(struct zmk_behavior_binding *binding,
     };
 
     for (int i = 0; i < sizeof(battery_codes) / sizeof(battery_codes[0]); i++) {
-        zmk_hid_keyboard_press(battery_codes[i]);
+        raise_zmk_keycode_state_changed_from_encoded(battery_codes[i], true, k_uptime_get());
         k_msleep(10);
-        zmk_hid_keyboard_release(battery_codes[i]);
+        raise_zmk_keycode_state_changed_from_encoded(battery_codes[i], false, k_uptime_get());
         k_msleep(10);
     }
 
